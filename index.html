@@ -1,0 +1,551 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+</head>
+<style>
+@import url('https://fonts.googleapis.com/css?lang=en&family=Product+Sans|Roboto:400,700');
+
+body {
+    margin:0px;
+    background: #e0e0e0;
+}
+
+.card {
+    overflow:hidden;
+    padding:0px;
+background-color: white;
+border-radius: 24px;
+box-shadow: 0px 8px 12px rgba(0,0,0,0.3);
+}
+
+.card .content {
+    padding:16px;
+}
+
+.pillButton {
+font-family: "Product sans";
+font-size: 36px;
+padding: 16px;
+border: 0px;
+outline: 0px;
+cursor: pointer;
+border-radius:512px;
+color:white;
+background:teal;
+}
+.pillButton:hover {
+background-color:lightslategray;
+}
+.pillButton:active {
+    background-color: darkslategray;
+}
+h1 {
+    margin: 0px;
+font-family: "Product sans";
+}
+#skinImg {
+    width:100%;
+    object-fit: cover;
+    }
+#spinButton {
+    width:100%;
+}
+#caseSelect {
+    font-family: "Product Sans";
+    margin-bottom: 8px;
+    border-radius: 500px;
+    padding: 8px;
+    font-size: 18px;
+    width:100%;
+    background: #e0e0e0;
+    border: 0px;
+    outline:0px;
+}
+</style>
+</head>
+<body>
+
+<div class="card" style="margin:8px;">
+    <div class="content">
+<h1 id="moneySpentCounter" style="margin-bottom:8px;">0kr</h1>
+<select name="case" id="caseSelect">
+</select>
+<button class="pillButton" id="spinButton" ontouchstart="">SPIN</button>
+<h1 id="spinResult" style="margin-top:16px;">Resultat</h1>
+</div>
+<img id="skinImg"></img>
+</div>
+
+</body>
+<script>
+var rarities =  {
+"blue":{
+    "name": "Mil-Spec",
+    "color": "#104FE0",
+    "dropChance": 79.92
+},
+"purple":{
+    "name": "Restricted",
+    "color": "#750CE1",
+    "dropChance": 15.98
+},
+"pink":{
+    "name": "Classified",
+    "color": "#E100CE",
+    "dropChance": 3.2
+},
+"red":{
+    "name": "Covert",
+    "color": "#FD000D",
+    "dropChance": 0.64
+},
+"yellow":{
+    "name": "Special Item",
+    "color": "#FFB400",
+    "dropChance": 0.26
+}
+};
+
+var cases = [
+{
+  "name": "Prisma Case",
+  "skins": [
+      {
+          "name": "The Emperor",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_gs_m4a4_emperor_light_large.61be48559b0a5d57e04108f876f5cf755ec8acc8.png", 
+          "rarity": "Covert",
+          "weapon": "M4A4"
+      },
+      {
+          "name": "Angry Mob",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_fiveseven_cu_five_seven_angry_light_large.54986e86178e0462d34fe78b6b726292813541f5.png", 
+          "rarity": "Covert",
+          "weapon": "Five-SeveN"
+      },
+      {
+          "name": "Momentum",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_aug_cu_aug_momentum_light_large.1f36037cec707a957785625f04b3740bb5286d16.png", 
+          "rarity": "Classified",
+          "weapon": "AUG"
+      },
+      {
+          "name": "Incinegator",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_xm1014_cu_xm1014_incinerator_light_large.7649f64bbfea49d6f0d951320e0bdd98d6bee088.png", 
+          "rarity": "Classified",
+          "weapon": "XM1014"
+      },
+      {
+          "name": "Skull Crusher",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_revolver_cu_revolver_oppressor_light_large.59414a184bcf3310d43528701292ba4f68ba55a0.png", 
+          "rarity": "Classified",
+          "weapon": "R8 Revolver"
+      },
+      {
+          "name": "Atheris",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_viper_light_large.2de75408a7c595312d58203f53c73a3a18faa4a3.png", 
+          "rarity": "Restricted",
+          "weapon": "AWP"
+      },
+      {
+          "name": "Light Rail",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_deagle_gs_deagle_exo_light_large.8bdc93f1b45efba187748065deff967eef8f2f2d.png", 
+          "rarity": "Restricted",
+          "weapon": "Desert Eagle"
+      },
+      {
+          "name": "Gauss",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mp5sd_gs_mp5sd_astromatic_light_large.d7acba118f13e4b7b0d9146dddd32cf71da9210d.png", 
+          "rarity": "Restricted",
+          "weapon": "MP5-SD"
+      },
+      {
+          "name": "Moonrise",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ump45_aa_ump45_moonrise_sunset_light_large.63cf279a66d95757f4fefe498b89480966887083.png", 
+          "rarity": "Restricted",
+          "weapon": "UMP-45"
+      },
+      {
+          "name": "Bamboozle",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_tec9_cu_tec9_bamboo_light_large.24d8986c41f344d8c1e9167a935c7b904757f85e.png", 
+          "rarity": "Restricted",
+          "weapon": "Tec-9"
+      },
+      {
+          "name": "Uncharted",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_aztec_light_large.368d90ba7bc01aa56489792a8962df5343238c5c.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "AK-47"
+      },
+      {
+          "name": "Off World",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_p90_cu_p90_offworld_light_large.45f1db5b8b435574f46fffe77960d8ef29519eca.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "P90"
+      },
+      {
+          "name": "Verdigris",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_p250_aq_p250_verdigris_light_large.379d19af038211ca3bf7d20c4c75726e9be36856.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "P250"
+      },
+      {
+          "name": "Whitefish",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mac10_gs_mac10_fish_bait_light_large.ce4f7a282959460f3ce477bd54910bf6bdf0c6ec.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "MAC-10"
+      },
+      {
+          "name": "Mischief",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mp7_cu_mp7_racketeer_light_large.ba5b3641b7b309cdd16d9f54fc2bc2331e738929.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "MP7"
+      },
+      {
+          "name": "Akoben",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_galilar_sp_galil_akoben_light_large.35a9e7a0fa943ac20d1b145d36bf3d4ccf33cc84.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Galil AR"
+      },
+      {
+          "name": "Crypsis",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_famas_sp_famas_ghost_insects_light_large.727c7db3f6df4aae8b692f6966dba460acafb07f.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "FAMAS"
+      },
+      {
+          "name": "Special item",
+          "imageUrl": "https://ih1.redbubble.net/image.139693796.6784/ap,550x550,16x12,1,transparent,t.png",
+          "rarity": "Special Item",
+          "weapon": "Knife" 
+      }
+  ]
+},
+{
+  "name": "Spectrum 2 Case",
+  "skins": [
+      {
+          "name": "The Empress",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_gs_ak47_empress_light_large.f81d0b07dca381635c89f74bcdb6b64a6da6e81c.png", 
+          "rarity": "Covert",
+          "weapon": "AK-47"
+      },
+      {
+          "name": "See Ya Later",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_p250_cu_p250_cybercroc_light_large.396de1d53797f8875d242d1eb33d5b81dce2bb8e.png", 
+          "rarity": "Covert",
+          "weapon": "P250"
+      },
+      {
+          "name": "Leaded Glass",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_silencer_gs_m4a1_shatter_light_large.f4d487cbf956eb13a505b8926c8f0f63cb3604b3.png", 
+          "rarity": "Classified",
+          "weapon": "M4A1-S"
+      },
+      {
+          "name": "High Roller",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_bizon_cu_bizon_all_in_light_large.d31ae97fe448b550cfe06d617daa3575c77e8c2a.png", 
+          "rarity": "Classified",
+          "weapon": "PP-Bizon"
+      },
+      {
+          "name": "Llama Cannon",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_revolver_gs_r8_llamacannon_light_large.ae4ce84764b4892a2ea2d3f9f0afc57023f7bdc8.png", 
+          "rarity": "Classified",
+          "weapon": "R8 Revolver"
+      },
+      {
+          "name": "Phantom",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_sg556_gs_sg553_phantom_light_large.51fc477c1024614f6f52080d3b7200408c9d2881.png", 
+          "rarity": "Restricted",
+          "weapon": "SG 553"
+      },
+      {
+          "name": "Tacticat",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_cz75a_gs_cz75_tacticat_light_large.ed9ba2f6cb8fd5e2a2b6cfb1b9a0ba4c87c93ec3.png", 
+          "rarity": "Restricted",
+          "weapon": "CZ75-Auto"
+      },
+      {
+          "name": "Exposure",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ump45_cu_ump45_x-ray_machine_light_large.a4563e015fd33d1874cc220458db2754a15dd08a.png", 
+          "rarity": "Restricted",
+          "weapon": "UMP-45"
+      },
+      {
+          "name": "Goo",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mp9_cu_mp9_goo_light_large.3cab8ecb356ee5f2549c1b148f5961fdf5d9cd76.png", 
+          "rarity": "Restricted",
+          "weapon": "MP9"
+      },
+      {
+          "name": "Ziggy",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_xm1014_aq_xm1014_ziggy_anarchy_light_large.7042642ba5043be6e1cb82d6bb9a05678402dea1.png", 
+          "rarity": "Restricted",
+          "weapon": "XM1014"
+      },
+      {
+          "name": "Triqua",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_aug_cu_aug_orange_triangle_light_large.793eb05ec841c2664b8482565e5d080c731d6ecd.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "AUG"
+      },
+      {
+          "name": "Off World",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_glock_cu_glock_indigo_light_large.3786c7c3be7d03ee053050af2f7a8427782742e1.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Glock-18"
+      },
+      {
+          "name": "Cracked Opal",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_tec9_cu_tec9_cracked_opal_light_large.d6e9cc1c31550faeac9c55341be170abf07245b7.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Tec-9"
+      },
+      {
+          "name": "Oceanic",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mac10_am_mac10_oceani_light_large.0c3e275f2964ea051d2481735fcdf6d174a22b1b.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "MAC-10"
+      },
+      {
+          "name": "Hunter",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_g3sg1_gs_g3sg1_cetme_redux_light_large.18ad1afdb32fca22879dcdd22e579c5afaef6ad8.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "G3SG1"
+      },
+      {
+          "name": "Morris",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_sawedoff_aq_sawed-off_flower_light_large.0d98b08ce8023d49dac2f76b10ef2f3cd7a33350.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Sawed-Off"
+      },
+      {
+          "name": "Jungle Slipstream",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_scar20_hy_scar20_jungle_slipstream_light_large.d49f99ac854c1a25fc46bde5dd32f438bdd587f1.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "SCAR-20"
+      },
+      {
+          "name": "Special item",
+          "imageUrl": "https://ih1.redbubble.net/image.139693796.6784/ap,550x550,16x12,1,transparent,t.png",
+          "rarity": "Special Item",
+          "weapon": "Knife" 
+      }
+  ]
+},
+{
+  "name": "Danger Zone Case",
+  "skins": [
+      {
+          "name": "Asiimov",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_asiimov_light_large.665fc3b83c8046398787a57d2ef7a9d938244820.png", 
+          "rarity": "Covert",
+          "weapon": "AK-47"
+      },
+      {
+          "name": "Neo-Noir",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_neonoir_light_large.c5dd57f8555d13c41f08024f27a9314074b698af.png", 
+          "rarity": "Covert",
+          "weapon": "AWP"
+      },
+      {
+          "name": "Mecha Industries",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_deagle_gs_deagle_mecha_light_large.e08c1fd8709f6b368956c41c68b17c15ff635635.png", 
+          "rarity": "Classified",
+          "weapon": "Desert Eagle"
+      },
+      {
+          "name": "Phosphor",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mp5sd_gs_mp5_festival_drip_light_large.c71af0a784e5ecd6e5d5f2f71961be155e283cde.png", 
+          "rarity": "Classified",
+          "weapon": "MP5-SD"
+      },
+      {
+          "name": "Momentum",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ump45_cu_ump_arrows_light_large.83f1e692bdafa92f29ce15aebb02502c9e70f276.png", 
+          "rarity": "Classified",
+          "weapon": "UMP-45"
+      },
+      {
+          "name": "Flashback",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_usp_silencer_cu_usp_flashback_light_large.47e10129af33303bac557560400c33e4fe555680.png", 
+          "rarity": "Restricted",
+          "weapon": "USP-S"
+      },
+      {
+          "name": "Nevermore",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_p250_aa_p250_gravediggers_light_large.df680e4648f5e08ec6e92ed36a5b9c05ae8bc5f4.png", 
+          "rarity": "Restricted",
+          "weapon": "P250"
+      },
+      {
+          "name": "Pipe Down",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mac10_gs_mac10_exo_pipes_light_large.e8327716d271e1e5f14f5af06547d5ac9714da49.png", 
+          "rarity": "Restricted",
+          "weapon": "MAC-10"
+      },
+      {
+          "name": "Signal",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_galilar_hy_galil_signal_red_light_large.d7c26f54fd72ec451094ea7791e921346e013197.png", 
+          "rarity": "Restricted",
+          "weapon": "Galil AR"
+      },
+      {
+          "name": "Scavenger",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_g3sg1_gs_g3sg1_savage_light_large.e452574f580f51b1da6312c0f80a0dc07e073d8b.png", 
+          "rarity": "Restricted",
+          "weapon": "G3SG1"
+      },
+      {
+          "name": "Magnesium",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_gs_m4a4_chopper_ghost_light_large.374913da49233223de4ca1ff09a20cc2a7a94288.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "M4A4"
+      },
+      {
+          "name": "Oxide Blaze",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_glock_cu_glock18_corroden_light_large.68906a0523399b599555746b51db2ffac29c5db5.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Glock-18"
+      },
+      {
+          "name": "Fubar",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_tec9_gs_tec9_fubar_light_large.00f64007983561f57c808b23e9260ebea6437bc7.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Tec-9"
+      },
+      {
+          "name": "Danger Close",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_sg556_gs_sg553_over_heated_light_large.aba3188360b2a87b8687d73af6c2e3034290402c.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "SG 553"
+      },
+      {
+          "name": "Modest Threat",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_mp9_gs_mp9_colony01_light_large.f8d9792131b786025a960ddeda2eeb77f97c55e3.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "MP9"
+      },
+      {
+          "name": "Black Sand",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_sawedoff_cu_sawedoff_black_sand_light_large.7ed9ce5083489c0fdf92814f0ebf6945ec6f29d4.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Sawed-Off"
+      },
+      {
+          "name": "Wood Fired",
+          "imageUrl": "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_nova_gs_nova_hunter_brute_light_large.8e2520f25098056ccd03b679859458fdc006c0a7.png", 
+          "rarity": "Mil-Spec",
+          "weapon": "Nova"
+      },
+      {
+          "name": "Special item",
+          "imageUrl": "https://ih1.redbubble.net/image.139693796.6784/ap,550x550,16x12,1,transparent,t.png",
+          "rarity": "Special Item",
+          "weapon": "Knife" 
+      }
+  ]
+}
+];
+
+var moneySpent = 0;
+
+var currentCaseIndex = 0;
+
+$(function() {
+
+    for(var i = 0; i < cases.length; i++) {
+var newOption = $("<option></option>").attr("name", cases[i].name).html(cases[i].name);
+        $("#caseSelect").append(newOption);
+    }
+
+    $("#caseSelect").change(function() {
+currentCaseIndex = this.selectedIndex;
+    });
+
+
+$("#spinButton").click(function() {
+    moneySpent += 21;
+    $("#moneySpentCounter").html(moneySpent + "kr");
+    spin();
+})
+});
+
+function spin() {
+    var randomNum = Math.random() * 100;
+    var droppedRarity = calculateSpec(randomNum);
+    var sorted;
+    
+    switch(droppedRarity) {
+        case 0:
+        sorted = cases[currentCaseIndex].skins.filter(function(cs) {
+             return cs.rarity == rarities.blue.name;
+          });
+          console.log(sorted);
+        $("#spinResult").css("color", rarities.blue.color);
+
+        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.blue.color + ")");
+        break;
+        case 1:
+        sorted = cases[currentCaseIndex].skins.filter(function(cs) {
+             return cs.rarity == rarities.purple.name;
+          });
+          console.log(sorted);
+        $("#spinResult").css("color", rarities.purple.color);
+
+        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.purple.color + ")");
+        break;
+        case 2:
+        sorted = cases[currentCaseIndex].skins.filter(function(cs) {
+             return cs.rarity == rarities.pink.name;
+          });
+          console.log(sorted);
+        $("#spinResult").css("color", rarities.pink.color);
+
+        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.pink.color + ")");
+        break;
+        case 3:
+        sorted = cases[currentCaseIndex].skins.filter(function(cs) {
+             return cs.rarity == rarities.red.name;
+          });
+          console.log(sorted);
+        $("#spinResult").css("color", rarities.red.color);
+
+        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.red.color + ")");
+        break;
+        case 4:
+        sorted = cases[currentCaseIndex].skins.filter(function(cs) {
+             return cs.rarity == rarities.yellow.name;
+          });
+          console.log(sorted);
+        $("#spinResult").css("color", rarities.yellow.color);
+
+        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.yellow.color + ")");
+        break;
+    }
+var randomSkinOfRarity = sorted[Math.floor(Math.random()*sorted.length)];
+
+  $("#spinResult").html(randomSkinOfRarity.weapon + " | " + randomSkinOfRarity.name);
+  $("#skinImg").attr("src", randomSkinOfRarity.imageUrl);
+}
+
+function calculateSpec(random) {
+    if((random -= rarities.blue.dropChance) < 0) {
+        return 0;
+    }
+    if((random -= rarities.purple.dropChance) < 0) {
+        return 1;
+    }
+    if((random -= rarities.pink.dropChance) < 0) {
+        return 2;
+    }
+    if((random -= rarities.red.dropChance) < 0) {
+        return 3;
+    }
+    if((random -= rarities.yellow.dropChance) < 0) {
+        return 4;
+    }
+}
+</script>
+</html>
