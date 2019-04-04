@@ -75,7 +75,7 @@ font-family: "Product sans";
 </div>
 </div>
 
-<div class="card" style="margin:8px;">
+<div class="card" style="margin:8px;" id="resultCard">
     
 <div class="content">
 <h1 id="spinResult">Resultat</h1>
@@ -504,9 +504,10 @@ function spin() {
              return cs.rarity == rarities.blue.name;
           });
           console.log(sorted);
-        $("#spinResult").css("color", rarities.blue.color);
+        $("#spinResult").css("color", "#fff");
 
-        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.blue.color + ")");
+        $("#skinImg").css("filter", "drop-shadow(0px 0px 30px " + "#fff" + ")");
+        $("#resultCard").css("background", rarities.blue.color)
 
         break;
         case 1:
@@ -514,18 +515,21 @@ function spin() {
              return cs.rarity == rarities.purple.name;
           });
           console.log(sorted);
-        $("#spinResult").css("color", rarities.purple.color);
+        
+          $("#spinResult").css("color", "#fff");
 
-        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.purple.color + ")");
+$("#skinImg").css("filter", "drop-shadow(0px 0px 30px " + "#fff" + ")");
+$("#resultCard").css("background", rarities.purple.color)
         break;
         case 2:
         sorted = cases[currentCaseIndex].skins.filter(function(cs) {
              return cs.rarity == rarities.pink.name;
           });
           console.log(sorted);
-        $("#spinResult").css("color", rarities.pink.color);
+          $("#spinResult").css("color", "#fff");
 
-        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.pink.color + ")");
+$("#skinImg").css("filter", "drop-shadow(0px 0px 30px " + "#fff" + ")");
+$("#resultCard").css("background", rarities.pink.color)
         break;
         case 3:
         sorted = cases[currentCaseIndex].skins.filter(function(cs) {
@@ -533,19 +537,22 @@ function spin() {
           });
           console.log(sorted);
           alert("You got a covert!");
-        $("#spinResult").css("color", rarities.red.color);
+          $("#spinResult").css("color", "#fff");
 
-        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.red.color + ")");
+$("#skinImg").css("filter", "drop-shadow(0px 0px 30px " + "#fff" + ")");
+$("#resultCard").css("background", rarities.red.color)
         break;
         case 4:
         sorted = cases[currentCaseIndex].skins.filter(function(cs) {
              return cs.rarity == rarities.yellow.name;
           });
           console.log(sorted);
-        $("#spinResult").css("color", rarities.yellow.color);
+          $("#spinResult").css("color", "#fff");
+
+$("#skinImg").css("filter", "drop-shadow(0px 0px 30px " + "#fff" + ")");
+$("#resultCard").css("background", rarities.yellow.color)
         alert("You got a special item!");
 
-        $("#skinImg").css("filter", "drop-shadow(0px 12px 24px " + rarities.yellow.color + ")");
         break;
     }
 var randomSkinOfRarity = sorted[Math.floor(Math.random()*sorted.length)];
