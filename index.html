@@ -147,7 +147,33 @@ var rarities =  {
 }
 };
 
-
+var conditions = {
+    "battlescarred":{
+        "name": "Battle-Scarred",
+        "minFloat": 0.44,
+        "maxFloat": 1
+    },
+    "wellworn":{
+        "name": "Well-Worn",
+        "minFloat": 0.37,
+        "maxFloat": 0.44
+    },
+    "fieldtested":{
+        "name": "Field Tested",
+        "minFloat": 0.15,
+        "maxFloat": 0.37
+    },
+    "minimalwear":{
+        "name": "Minimal Wear",
+        "minFloat": 0.07,
+        "maxFloat": 0.15
+    },
+    "factorynew":{
+        "name": "Factory New",
+        "minFloat": 0,
+        "maxFloat": 0.07
+    }
+};
 
 var cases;
 var casesListURL = "https://magswag.github.io/CS-GO-case-open-simulator/data/cases.json";
@@ -214,11 +240,29 @@ function spin() {
 var randomSkinOfRarity = filteredSkins[Math.floor(Math.random()*filteredSkins.length)];
 
 var skinFloat = Math.random();
-$("#skinFloat").html("Wear Rating: " + skinFloat.toFixed(9));
+$("#skinFloat").html("Wear Rating: " + skinFloat.toFixed(9) + " (" + calculateCondition(skinFloat).name + ")");
 
   $("#spinResult").html(randomSkinOfRarity.weapon + " | " + randomSkinOfRarity.name);
   $("#resultCard").css("background-image", "linear-gradient(to bottom right, " + foo[droppedRarity].lightColor + ", " + foo[droppedRarity].color);
   $("#skinImg").attr("src", randomSkinOfRarity.imageUrl);
+}
+
+function calculateCondition(num) {
+    if(num > conditions.factorynew.minFloat && num < conditions.factorynew.maxFloat) {
+        return conditions.factorynew;
+    }
+    if(num > conditions.minimalwear.minFloat && num < conditions.minimalwear.maxFloat) {
+        return conditions.minimalwear;
+    }
+    if(num > conditions.fieldtested.minFloat && num < conditions.fieldtested.maxFloat) {
+        return conditions.fieldtested;
+    }
+    if(num > conditions.wellworn.minFloat && num < conditions.wellworn.maxFloat) {
+        return conditions.wellworn;
+    }
+    if(num > conditions.battlescarred.minFloat && num < conditions.battlescarred.maxFloat) {
+        return conditions.battlescarred;
+    }
 }
 
 function calculateSpec(random) {
