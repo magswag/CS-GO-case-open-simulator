@@ -9,8 +9,6 @@
 body {
     margin:0px;
     background: #e0e0e0;
-    display: grid;
-    grid-template-columns: 30% auto 30%;
 }
 
 .card {
@@ -70,25 +68,10 @@ font-family: "Product sans";
     font-weight: 900;
     color: white;
 }
-#skinFloat {
-    color:white;
-    font-family: "Product Sans";
-}
-#contentHolder {
-    grid-column: 2;
-}
-
-@media screen and (max-width: 800px) {
-body {
-    display: inline;
-}
-
-}
 </style>
 </head>
 <body>
- 
-<div class="content" id="contentHolder">   
+
 <div class="card" style="margin:8px;">
     <div class="content">
 <h1 id="moneySpentCounter" style="margin-bottom:8px;">0kr</h1>
@@ -113,35 +96,33 @@ var rarities =  {
     "name": "Mil-Spec",
     "color": "#104FE0",
     "lightColor": "#87ABFF",
-    "dropChance": 79.92
+    "dropChance": 20
 },
 "purple":{
     "name": "Restricted",
     "color": "#750CE1",
     "lightColor": "#C184FF",
-    "dropChance": 15.98
+    "dropChance": 20
 },
 "pink":{
     "name": "Classified",
     "color": "#E100CE",
     "lightColor": "#FF8CF5",
-    "dropChance": 3.2
+    "dropChance": 20
 },
 "red":{
     "name": "Covert",
     "color": "#FD000D",
     "lightColor": "#FF878D",
-    "dropChance": 0.64
+    "dropChance": 20
 },
 "yellow":{
     "name": "Special Item",
     "color": "#FFB400",
     "lightColor": "#FFD46B",
-    "dropChance": 0.26
+    "dropChance": 20
 }
 };
-
-
 
 var cases;
 var casesListURL = "https://magswag.github.io/CS-GO-case-open-simulator/data/cases.json";
@@ -208,7 +189,7 @@ function spin() {
 var randomSkinOfRarity = filteredSkins[Math.floor(Math.random()*filteredSkins.length)];
 
 var skinFloat = Math.random();
-$("#skinFloat").html(skinFloat.toFixed(9));
+$("#skinFloat").html(skinFloat);
 
   $("#spinResult").html(randomSkinOfRarity.weapon + " | " + randomSkinOfRarity.name);
   $("#resultCard").css("background-image", "linear-gradient(to bottom right, " + foo[droppedRarity].lightColor + ", " + foo[droppedRarity].color);
