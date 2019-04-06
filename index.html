@@ -22,7 +22,7 @@ box-shadow: 0px 8px 12px rgba(0,0,0,0.3);
 }
 
 .card .content {
-    padding:16px;
+    padding:32px;
 }
 
 .pillButton {
@@ -80,11 +80,20 @@ font-family: "Roboto";
 #contentHolder {
     grid-column: 2;
 }
+#skinPrice {
+    font-weight: 900;
+    margin: 0px;
+    color:white;
+    font-family: "Roboto";
+    float:right;
+
+}
 
 @media screen and (max-width: 800px) {
 body {
     display: inline;
 }
+
 
 }
 </style>
@@ -104,11 +113,11 @@ body {
 <div class="card" style="margin:8px;" id="resultCard">
 <div class="content">
 <h1 id="spinResult">Resultat</h1>
+<h1 id="skinPrice"></h1>
 <p id="skinFloat">Wear Rating: 1.0</p>
 </div>
 <img id="skinImg">
 <div class="content">
-
 </div>
 </div>
 
@@ -159,7 +168,7 @@ var conditions = {
         "maxFloat": 0.45
     },
     "fieldtested":{
-        "name": "Field Tested",
+        "name": "Field-Tested",
         "minFloat": 0.15,
         "maxFloat": 0.38
     },
@@ -179,10 +188,19 @@ var cases;
 var casesListURL = "https://magswag.github.io/CS-GO-case-open-simulator/data/cases.json";
 
 var moneySpent = 0;
+var moneyEarnt = 0;
+
+var steamAPIKey = "0tjQuDGEeLtvXtq-CGpbb6NSjDI";
 
 var currentCaseIndex = 0;
 
+var currencyRates;
+
 $(function() {
+
+    $.getJSON("https://api.exchangeratesapi.io/latest", function(data) {
+      currencyRates = data;
+    });
 
     $.getJSON(casesListURL, function(data) {
        cases = data;
@@ -210,7 +228,6 @@ document.cookie = "selectedCaseIndex= " + currentCaseIndex;
 
 $("#spinButton").click(function() {
     moneySpent += 21;
-    $("#moneySpentCounter").html(moneySpent + "kr");
     spin();
 })
 });
@@ -239,12 +256,32 @@ function spin() {
           
 var randomSkinOfRarity = filteredSkins[Math.floor(Math.random()*filteredSkins.length)];
 
-var skinFloat = Math.random();
+var skinFloat = parseFloat(Math.random() * (randomSkinOfRarity.maxfloat - randomSkinOfRarity.minfloat) + randomSkinOfRarity.minfloat);
 $("#skinFloat").html("Wear Rating: " + skinFloat.toFixed(9) + " (" + calculateCondition(skinFloat).name + ")");
 
   $("#spinResult").html(randomSkinOfRarity.weapon + " | " + randomSkinOfRarity.name);
   $("#resultCard").css("background-image", "linear-gradient(to bottom right, " + foo[droppedRarity].lightColor + ", " + foo[droppedRarity].color);
-  $("#skinImg").attr("src", randomSkinOfRarity.imageUrl);
+  $("#skinImg").css("display", "none");
+
+
+$.getJSON("https://api.steamapis.com/market/item/730/" + randomSkinOfRarity.weapon + " | " + randomSkinOfRarity.name + " (" + calculateCondition(skinFloat).name + ")" + "?api_key=" + steamAPIKey, function(result) {
+   
+   $("#skinImg").on("load", function() {
+   $("#skinImg").fadeIn(300);
+   });
+    $("#skinImg").attr("src", result.image);
+ 
+   
+var skinPrice = ((result.median_avg_prices_15days[14][1]*currencyRates.rates.USD)*currencyRates.rates.NOK);
+
+    $("#skinPrice").html(skinPrice.toFixed(2) + "kr");
+
+    moneyEarnt += skinPrice;
+
+    $("#moneySpentCounter").html(moneySpent + "kr" + " | " + moneyEarnt.toFixed(2) + "kr");
+
+});
+
 }
 
 function calculateCondition(num) {
