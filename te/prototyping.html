@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+<style>
+    @import url("https://fonts.googleapis.com/css?lang=en&family=Product+Sans");
+    body {
+        margin:0px;
+        background-color: #e0e0e0;
+    }
+
+    .card {
+        overflow: hidden;
+        background-color: white;
+        border-radius: 20px;
+    }
+    .card .content {
+        padding: 16px;
+    }
+
+    .popupDimmer {
+        background-color: rgba(0,0,0,0.5);
+        position: fixed;
+        width:100%;
+        height: 100%;
+    }
+
+    .skinDetailCard {
+        left: 50%;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+     box-shadow: 0px 3px 32px rgba(0,0,0,0.75);
+    }
+    h1 {
+        font-family: "Product Sans";
+        margin: 0px;
+    }
+
+    img {
+        width:100%;
+        height:auto;
+        object-fit: cover;
+    }
+</style>
+<script>
+    var marketData;
+
+$(function() {
+ $("#searchItem").click(function() {
+    window.location.href = "file:///S:/HTML/CSGO_CaseOpenShit/CS-GO-case-open-simulator/prototyping.html" + "?skin=" + $("input").val();
+ });
+
+    $.getJSON("https://api.steamapis.com/market/items/730?api_key=0tjQuDGEeLtvXtq-CGpbb6NSjDI", function(data) {
+      marketData = data;
+      if(getAllUrlParams().skin !== undefined) {
+      openSkinDetail();
+   }
+ });
+});
+
+function openSkinDetail() {
+       var filtered = marketData.data.filter(function(foo) {
+           return foo.market_hash_name === decodeURIComponent(getAllUrlParams().skin);
+       });
+
+       createSkinDetailPopup(filtered[0]);
+       
+       if(filtered[0] == undefined) {
+           alert("error");
+       }
+  
+}
+
+function createSkinDetailPopup(data) {
+
+    var popupDimmer = $("<div class='popupDimmer'></div>");
+    var skinDetailsCard = $("<div class='card skinDetailCard' style='margin:8px;'></div>");
+       var skinDetailsContent = $("<div class='content'></div>");
+       var skinDetailsImage = $("<img></img>").attr("src", data.image);
+       var skinDetailsName = $("<h1></h1>").html(data.market_name);
+
+       skinDetailsContent.append(skinDetailsName);
+       skinDetailsCard.append(skinDetailsImage, skinDetailsContent);
+       popupDimmer.append(skinDetailsCard);
+ 
+       $("body").append(popupDimmer);
+
+}
+
+function getAllUrlParams(url) {
+
+// get query string from url (optional) or window
+var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+
+// we'll store the parameters here
+var obj = {};
+
+// if query string exists
+if (queryString) {
+
+  // stuff after # is not part of query string, so get rid of it
+  queryString = queryString.split('#')[0];
+
+  // split our query string into its component parts
+  var arr = queryString.split('&');
+
+  for (var i = 0; i < arr.length; i++) {
+    // separate the keys and the values
+    var a = arr[i].split('=');
+
+    // set parameter name and value (use 'true' if empty)
+    var paramName = a[0];
+    var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
+
+
+    // if the paramName ends with square brackets, e.g. colors[] or colors[2]
+    if (paramName.match(/\[(\d+)?\]$/)) {
+
+      // create key if it doesn't exist
+      var key = paramName.replace(/\[(\d+)?\]/, '');
+      if (!obj[key]) obj[key] = [];
+
+      // if it's an indexed array e.g. colors[2]
+      if (paramName.match(/\[\d+\]$/)) {
+        // get the index value and add the entry at the appropriate position
+        var index = /\[(\d+)\]/.exec(paramName)[1];
+        obj[key][index] = paramValue;
+      } else {
+        // otherwise add the value to the end of the array
+        obj[key].push(paramValue);
+      }
+    } else {
+      // we're dealing with a string
+      if (!obj[paramName]) {
+        // if it doesn't exist, create property
+        obj[paramName] = paramValue;
+      } else if (obj[paramName] && typeof obj[paramName] === 'string'){
+        // if property does exist and it's a string, convert it to an array
+        obj[paramName] = [obj[paramName]];
+        obj[paramName].push(paramValue);
+      } else {
+        // otherwise add the property
+        obj[paramName].push(paramValue);
+      }
+    }
+  }
+}
+
+return obj;
+}
+</script>
+    </head>
+    <body>
+        <input type="text" placeholder="Search for item">
+        <button id="searchItem">SEARCH</button>
+    </body>
+</html>
